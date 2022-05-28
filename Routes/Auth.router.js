@@ -8,4 +8,6 @@ AuthRouter.post("/login", AuthController.loginController);
 
 AuthRouter.post("/emailVerification", AuthController.emailVerificationController);
 
+AuthRouter.post("/verifyUser", AuthController.verifyUser);
+
 module.exports = AuthRouter;

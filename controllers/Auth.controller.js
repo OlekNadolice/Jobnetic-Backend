@@ -14,3 +14,8 @@ module.exports.emailVerificationController = async (req, res) => {
   const data = await AuthService.emailVerificationService(req);
   res.json(data);
 };
+
+module.exports.verifyUser = async (req, res) => {
+  const data = await AuthService.userVerificationService(req);
+  res.json(data);
+};

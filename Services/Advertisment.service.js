@@ -2,9 +2,14 @@ const Advertisment = require("../Models/Advertisment");
 const User = require("../Models/User");
 const nodemailer = require("nodemailer");
 
+const jwt = require("jsonwebtoken");
+
 module.exports.CreateAdvertismentService = async req => {
   try {
-    await Advertisment.create({ ...req.body });
+    const { Owner: token } = req.body;
+    const id = jwt.verify(token, process.env.JWT_SECRET);
+
+    const data = await Advertisment.create({ ...req.body, Owner: id.id });
     return { status: 201, message: "Succesfully created" };
   } catch (error) {
     return { status: 500, message: error };
@@ -43,21 +48,54 @@ module.exports.fetchSingleAdvertismentService = async req => {
 
 module.exports.sendCvAdvertismentService = async req => {
   try {
-    const { firstName, lastName, email, githubProfile, id } = req.body;
-    const advertisment = await Advertisment.findById(id);
-    const advertismentOwnerID = advertisment.owner;
-    const { email: reciverEmail } = await User.findById(advertisementOwnerID);
+    const { email, firstName, lastName, githubProfile, advertismentId } = req.body;
+    const { Title } = await Advertisment.findById(advertismentId);
+    const { Owner } = await Advertisment.findById(advertismentId);
+
+    const { email: reciverEmail } = await User.findById(Owner);
+
+    let message;
 
     let transporter = nodemailer.createTransport({
-      host: "smtp.ethereal.email",
-      port: 587,
-      secure: false,
+      service: "gmail",
+      port: 465,
+      secure: true,
       auth: {
-        user: testAccount.user, // generated ethereal user
-        pass: testAccount.pass, // generated ethereal password
+        user: process.env.em,
+        pass: process.env.pw,
       },
     });
-  } catch (err) {
-    return { status: 500, message: err };
+
+    let mailOptions = {
+      from: '"Jobnetic Website" <jobneticwebsite@gmail.com>',
+      to: email,
+      subject: `Your application for ${Title}`,
+      text: `Application  for ${Title} send succesfully`,
+    };
+
+    let mailOptions2 = {
+      from: '"Jobnetic Website" <jobneticwebsite@gmail.com>',
+      to: reciverEmail,
+      subject: `You have received new resume`,
+      text: `${firstName} ${lastName} send you cv ${githubProfile} `,
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        message = error;
+      } else {
+        message = { status: 201, message: "Resume send sucesffuly" };
+      }
+    });
+
+    transporter.sendMail(mailOptions2, function (error, info) {
+      if (error) {
+        message = error;
+      } else {
+        message = { status: 201, message: "Resume send sucesffuly" };
+      }
+    });
+  } catch (error) {
+    return { status: 500 };
   }
 };

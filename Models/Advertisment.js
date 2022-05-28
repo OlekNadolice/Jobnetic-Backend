@@ -9,6 +9,8 @@ const Advertisment = new mongoose.Schema({
   Form: String,
   Date: String,
   PartTime: String,
+  Owner: String,
+
   ExpectedTechnologies: [String],
   AdditionalTechnologies: [String],
   Responsibilities: [String],

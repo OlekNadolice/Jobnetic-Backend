@@ -10,6 +10,8 @@ dotenv.config({ path: ".env" });
 
 const db = require("./DB");
 
+const port = process.env.PORT || 8000;
+
 app.use(
   cors({
     origin: process.env.CLIENT_URL,
@@ -29,7 +31,7 @@ app.use(
 app.use("/auth", AuthRouter);
 app.use("/advertisment", AdvertismentRouter);
 
-app.listen(8000, () => {
+app.listen(port, () => {
   console.log("App is running");
 });
 

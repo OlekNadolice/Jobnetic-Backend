@@ -2,7 +2,11 @@ const express = require("express");
 const AdvertismentRouter = express.Router();
 const AdvertismentController = require("../controllers/Advertisment.controller");
 
-AdvertismentRouter.post("/create", AdvertismentController.createAdvertismentController);
+AdvertismentRouter.post(
+  "/create",
+
+  AdvertismentController.createAdvertismentController
+);
 
 AdvertismentRouter.post("/sendCv", AdvertismentController.sendCvAdvertismentController);
 
